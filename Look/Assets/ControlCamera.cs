@@ -9,8 +9,6 @@ public class ControlCamera : MonoBehaviour {
 	public bool onJump = false;
 	public float groundHeight;
 
-	public GameObject cube;
-
 	void Start(){
 		groundHeight = transform.position.y;
 		Input.gyro.enabled = true;
