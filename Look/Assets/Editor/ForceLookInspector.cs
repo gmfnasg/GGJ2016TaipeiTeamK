@@ -8,7 +8,6 @@ public class ForceLookInspector : Editor {
 
 	ForceLook ForceLook;
 
-	// Use this for initialization
 	void OnEnable () {
 		ForceLook = (ForceLook)target ;
 	}
@@ -19,8 +18,7 @@ public class ForceLookInspector : Editor {
 			return;
 		EditorGUILayout.BeginVertical ("Box");
 		EditorGUILayout.LabelField ("參數");
-		if(ForceLook.CheckDoneTime!=null)
-			EditorGUILayout.LabelField ("CheckDoneTime: " + ForceLook.CheckDoneTime);
+		EditorGUILayout.LabelField ("CheckDoneTime: " + ForceLook.CheckDoneTime);
 		EditorGUILayout.ObjectField ("ForceGo", ForceLook.ForceGo, typeof(GameObject)); 
 		EditorGUILayout.EndVertical ();
 
@@ -30,11 +28,6 @@ public class ForceLookInspector : Editor {
 		ForceLook.CardBoard = EditorGUILayout.ObjectField ("CardBoard", ForceLook.CardBoard, typeof(GameObject)) as GameObject; 
 		EditorGUILayout.EndVertical ();
 
-		EditorGUILayout.BeginVertical ("Box");
-		EditorGUILayout.LabelField ("Debug");
-		ForceLook.DebugInfoText = EditorGUILayout.ObjectField ("DebugInfoText", ForceLook.DebugInfoText, typeof(Text)) as Text; 
-		ForceLook.DebugInfoWatingTimeText = EditorGUILayout.ObjectField ("DebugInfoWatingTimeText", ForceLook.DebugInfoWatingTimeText, typeof(Text)) as Text; 
-		EditorGUILayout.EndVertical ();
 	}
 
 }
