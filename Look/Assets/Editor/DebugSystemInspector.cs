@@ -23,6 +23,8 @@ public class DebugSystemInspector : Editor {
 		EditorGUILayout.BeginVertical ("Box");
 		EditorGUILayout.LabelField ("參數");
 
+		EditorGUILayout.ObjectField ("DebugInfoText", DebugSystem.DebugInfoText, typeof(Text)); 
+
 		EditorGUILayout.BeginVertical ("Box");
 		EditorGUILayout.LabelField ("顯示訊息系統列表");
 		for (int i = 0; i < DebugSystem.DebugShowSystemLogList.Count; i++) {
@@ -41,6 +43,9 @@ public class DebugSystemInspector : Editor {
 		}
 		EditorGUILayout.EndVertical ();
 
+		EditorGUILayout.ObjectField ("DebugFovText", DebugSystem.DebugFovText, typeof(Text)); 
+		EditorGUILayout.ObjectField ("StereoController3D", DebugSystem.StereoController3D, typeof(StereoController));
+
 		EditorGUILayout.EndVertical ();
 		#endregion 參數
 
@@ -48,7 +53,6 @@ public class DebugSystemInspector : Editor {
 		EditorGUILayout.BeginVertical ("Box");
 		EditorGUILayout.LabelField ("基本設定");
 		DebugSystem.MaxShowLogAmount = EditorGUILayout.IntField ("MaxShowLogAmount: ", DebugSystem.MaxShowLogAmount);
-		DebugSystem.DebugInfoText = EditorGUILayout.ObjectField ("DebugInfoText", DebugSystem.DebugInfoText, typeof(Text)) as Text; 
 		EditorGUILayout.EndVertical ();
 
 		if (EditorGUI.EndChangeCheck ())
