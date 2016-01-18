@@ -8,6 +8,7 @@ public class ControlCamera : MonoBehaviour {
 	public float fallSpeed = 1f;
 	public bool onJump = false;
 	public float groundHeight;
+	public Transform headTransform;
 
 	void Start(){
 		groundHeight = transform.position.y;
@@ -26,18 +27,20 @@ public class ControlCamera : MonoBehaviour {
 	}  
 
 	void Move(){
-		Vector3 newPos = new Vector3 (Input.GetAxis("Horizontal")*0.1f, 0,Input.GetAxis("Vertical")*0.1f);
-		transform.Translate (newPos);
+		if (Input.GetAxis ("Horizontal") == 0 && Input.GetAxis ("Vertical") == 0)
+			return;
+		Vector3 newPos =  Vector3.zero;
+		newPos = newPos + (headTransform.forward*Input.GetAxis("Vertical"));
+		newPos = newPos + (headTransform.right*Input.GetAxis("Horizontal"));
+		transform.Translate (newPos, Space.World);
 	}
 
 	void Jump(){
 		//跳躍
 		if (onJump) {
-			float value = 0;
 			if(jumpHeight > jumpValue){
 				//往上
 				jumpValue += jumpSpeed;
-				value = 1;
 			}else{
 				onJump = false;
 				jumpValue = 0;
