@@ -69,7 +69,10 @@
      <Compile Include="Assets\Cardboard\Scripts\VRDevices\CardboardiOSDevice.cs" />
      <Compile Include="Assets\Cardboard\Scripts\VRDevices\UnityEditorDevice.cs" />
      <Compile Include="Assets\ControlCamera.cs" />
+     <Compile Include="Assets\DebugSystem.cs" />
      <Compile Include="Assets\ForceLook.cs" />
+     <Compile Include="Assets\InfoBoard.cs" />
+     <Compile Include="Assets\Portal.cs" />
      <None Include="Assets\Cardboard\Resources\SkyboxMesh.shader" />
      <None Include="Assets\Cardboard\Distortion\CardboardDistortion.cginc" />
      <None Include="Assets\Cardboard\Resources\UnlitTexture.shader" />
