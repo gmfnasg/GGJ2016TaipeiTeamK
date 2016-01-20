@@ -17,6 +17,11 @@ public class ForceLook : MonoBehaviour {
 	public StereoController StereoController3D = null;
 	public static float ZoomSpeed = 0.1f;
 
+    public static Color CanControlColor = Color.yellow;
+    public static Color CanControOnForcelColor = Color.red;
+    public static Color DontControlColor = Color.green;
+    public static Color DontControOnForcelColor = Color.blue; 
+
 	// Use this for initialization
 	void Start () {
 		if (StereoController3D == null) {
@@ -41,8 +46,8 @@ public class ForceLook : MonoBehaviour {
 	}
 	
 	public void SetGazedAt(bool gazedAt) {
-		Color forceColor = CanControl ? Color.red : Color.yellow;
-		Color notForceColor = CanControl ? Color.blue : Color.green;
+        Color forceColor = CanControl ? CanControOnForcelColor : DontControOnForcelColor;
+        Color notForceColor = CanControl ? CanControlColor : DontControlColor;
 		GetComponent<Renderer>().material.color = gazedAt ? forceColor : notForceColor;
 		if (gazedAt && ForceGo == null) {
 			CheckDoneTime = Time.time + WatingTime;

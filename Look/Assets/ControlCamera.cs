@@ -17,14 +17,20 @@ public class ControlCamera : MonoBehaviour {
 
 	void Update()  
 	{
-		Move ();
+		
+	}
 
-		if (Input.GetKeyDown (KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.Space)) {
-			onJump = true;
-		}
-		Jump ();
-		Fall ();
-	}  
+    void FixedUpdate()
+    {
+        Move();
+
+        if (Input.GetKeyDown(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.Space))
+        {
+            onJump = true;
+        }
+        Jump();
+        Fall();
+    }
 
 	void Move(){
 		if (Input.GetAxis ("Horizontal") == 0 && Input.GetAxis ("Vertical") == 0)
