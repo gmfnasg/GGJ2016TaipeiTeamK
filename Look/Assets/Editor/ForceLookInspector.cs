@@ -27,9 +27,10 @@ public class ForceLookInspector : Editor {
 		ForceLook.CanControl = EditorGUILayout.Toggle ("可被操作",ForceLook.CanControl);
 		ForceLook.WatingTime = EditorGUILayout.FloatField ("WatingTime", ForceLook.WatingTime);
 		ForceLook.CardBoard = EditorGUILayout.ObjectField ("CardBoard", ForceLook.CardBoard, typeof(GameObject)) as GameObject; 
-		ForceLook.StereoController3D = EditorGUILayout.ObjectField ("StereoController3D", ForceLook.StereoController3D, typeof(StereoController)) as StereoController; 
+		EditorGUILayout.ObjectField ("StereoController3D", ForceLook.StereoController3D, typeof(StereoController)); 
 		ForceLook.ZoomSpeed = EditorGUILayout.FloatField ("ZoomSpeed", ForceLook.ZoomSpeed);
-		EditorGUILayout.EndVertical ();
+        EditorGUILayout.ObjectField("Camera3D", ForceLook.Camera3D, typeof(Camera));
+        EditorGUILayout.EndVertical ();
 
 	}
 
