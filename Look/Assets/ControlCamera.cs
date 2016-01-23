@@ -2,7 +2,9 @@
 using System.Collections;
 
 public class ControlCamera : MonoBehaviour {
-	public float jumpHeight = 10;
+    public string SystemName = "ControlCamera";
+
+    public float jumpHeight = 10;
 	public float jumpSpeed = 1f;
 	public float jumpValue;
 	public float fallSpeed = 1f;
@@ -27,9 +29,22 @@ public class ControlCamera : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.Space))
         {
             onJump = true;
+            DebugSystem.AddLog(DebugSystem.DebugInfo.GetNewDebugInfo(
+               DebugSystem.DebugInfo.DebugLogTypeEnum.Info,
+               SystemName,
+               "跳"));
         }
         Jump();
         Fall();
+
+        if (Input.GetKeyDown(KeyCode.Joystick1Button1) || Input.GetKeyDown(KeyCode.R))
+        {
+            DebugSystem.AddLog(DebugSystem.DebugInfo.GetNewDebugInfo(
+               DebugSystem.DebugInfo.DebugLogTypeEnum.Info,
+               SystemName,
+               "重設視野中新點"));
+            Cardboard.SDK.Recenter();
+        }
     }
 
 	void Move(){
