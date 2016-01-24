@@ -26,7 +26,7 @@ public class InfoBoard : MonoBehaviour {
     void Update()
     {
         if (CardBoard!=null)
-            transform.LookAt(CardBoard.transform.position);
+            InfoBoardGo.transform.LookAt(CardBoard.transform.position);
     }
 
     void CreateInfoBoard()

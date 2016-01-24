@@ -20,7 +20,7 @@ public class ForceLookInspector : Editor {
 		EditorGUILayout.BeginVertical ("Box");
 		EditorGUILayout.LabelField ("資訊 (不可設定)");
 
-        EditorGUILayout.EnumPopup(ForceLook.State);
+        EditorGUILayout.EnumPopup(ForceLook.LookState);
         GUI.color = Color.yellow;
         EditorGUILayout.Toggle("被注視", ForceLook.OnForceLook);
         EditorGUILayout.Toggle("確定", ForceLook.ForceLookCheckDone);

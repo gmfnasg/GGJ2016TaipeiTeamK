@@ -11,6 +11,7 @@ public class ControlCamera : MonoBehaviour {
 	public bool onJump = false;
 	public float groundHeight;
 	public Transform headTransform;
+    public float moveSpeed = 0.1f;
 
 	void Start(){
 		groundHeight = transform.position.y;
@@ -26,7 +27,7 @@ public class ControlCamera : MonoBehaviour {
     {
         Move();
 
-        if (Input.GetKeyDown(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.Space))
+        if ((Input.GetKeyDown(KeyCode.Joystick1Button1) && Input.GetKey(KeyCode.Joystick1Button7)) || Input.GetKeyDown(KeyCode.Space))
         {
             onJump = true;
             DebugSystem.AddLog(DebugSystem.DebugInfo.GetNewDebugInfo(
@@ -37,7 +38,7 @@ public class ControlCamera : MonoBehaviour {
         Jump();
         Fall();
 
-        if (Input.GetKeyDown(KeyCode.Joystick1Button1) || Input.GetKeyDown(KeyCode.R))
+        if ((Input.GetKeyDown(KeyCode.Joystick1Button8) && Input.GetKey(KeyCode.Joystick1Button7)) || Input.GetKeyDown(KeyCode.R))
         {
             DebugSystem.AddLog(DebugSystem.DebugInfo.GetNewDebugInfo(
                DebugSystem.DebugInfo.DebugLogTypeEnum.Info,
@@ -51,8 +52,8 @@ public class ControlCamera : MonoBehaviour {
 		if (Input.GetAxis ("Horizontal") == 0 && Input.GetAxis ("Vertical") == 0)
 			return;
 		Vector3 newPos =  Vector3.zero;
-		newPos = newPos + (headTransform.forward*Input.GetAxis("Vertical"));
-		newPos = newPos + (headTransform.right*Input.GetAxis("Horizontal"));
+		newPos = newPos + (headTransform.forward*Input.GetAxis("Vertical")* moveSpeed);
+		newPos = newPos + (headTransform.right*Input.GetAxis("Horizontal")* moveSpeed);
 		transform.Translate (newPos, Space.World);
 	}
 
