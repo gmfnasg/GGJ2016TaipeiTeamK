@@ -158,7 +158,7 @@ public class ForceLook : MonoBehaviour {
                     break;
 
                 case InteractiveModeEnum.ControlOther:
-                    //移動Cardboard到指定的位置
+                    //Cardboard移動到指定的位置
                     if (PortalTo != Vector3.zero)
                     {
                         if (CanControl && Portal.Instance != null
@@ -173,6 +173,12 @@ public class ForceLook : MonoBehaviour {
                             HaveGameobjectOnForceLook = null;
                         }
                     }
+                    break;
+
+                case InteractiveModeEnum.ProtagonistGoNextPoint:
+                    // 主角移動到下一個指定位置
+                    if (PlayerControl.Instance != null)
+                        PlayerControl.Instance.GoNextPoint();
                     break;
 
                 case InteractiveModeEnum.None:
@@ -279,7 +285,7 @@ public class ForceLook : MonoBehaviour {
         //this.gameObject.name + "被觀看"));
 
 
-        if (OnCamera())
+        if (OnCamera.InCamera(LookCamera, gameObject, VisionDistance))
         {
             if (this.LookState == LookStateEnum.Invisible)
             {
@@ -301,7 +307,7 @@ public class ForceLook : MonoBehaviour {
     //出現在任何一台攝影影機的瞬間，包含編輯畫面
     void OnBecameVisible()
     {
-        if (!OnCamera())
+        if (!OnCamera.InCamera(LookCamera, gameObject, VisionDistance))
             return;
         this.LookState = LookStateEnum.StartLook;
         OnChangeToStartLook();
@@ -373,42 +379,42 @@ public class ForceLook : MonoBehaviour {
     }
     #endregion 改變被注視狀態表現
 
-    #region 檢查是否在指定攝影機內
-    bool OnCamera()
-    {
-        #region 檢查是否在指定攝影範圍內
-        if (LookCamera == null)
-            return false;
-        Collider collider = GetComponent<Collider>();
-        if (collider == null)
-            return false;
-        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(LookCamera);
-        bool isOnCamera = GeometryUtility.TestPlanesAABB(planes, collider.bounds);
-        if (!isOnCamera)
-            return false;
-        #endregion 檢查是否在指定攝影範圍內
+    //#region 檢查是否在指定攝影機內
+    //bool OnCamera()
+    //{
+    //    #region 檢查是否在指定攝影範圍內
+    //    if (LookCamera == null)
+    //        return false;
+    //    Collider collider = GetComponent<Collider>();
+    //    if (collider == null)
+    //        return false;
+    //    Plane[] planes = GeometryUtility.CalculateFrustumPlanes(LookCamera);
+    //    bool isOnCamera = GeometryUtility.TestPlanesAABB(planes, collider.bounds);
+    //    if (!isOnCamera)
+    //        return false;
+    //    #endregion 檢查是否在指定攝影範圍內
 
 
-        #region 檢查是否有遮蔽物
-        //這是簡陋板，只能檢查無體中新點是否有被遮擋無法判定是否有任何地方有顯示
-        #region 取得看到的物體
-        if (LookCamera == null)
-            return false;
-        Vector3 screenPoint = LookCamera.WorldToScreenPoint(transform.position);
-        Ray ray = LookCamera.ScreenPointToRay(screenPoint);
-        RaycastHit hit;
-        if (!Physics.Raycast(ray, out hit, VisionDistance))
-            return false;
-        #endregion 取得看到的物體
+    //    #region 檢查是否有遮蔽物
+    //    //這是簡陋板，只能檢查無體中新點是否有被遮擋無法判定是否有任何地方有顯示
+    //    #region 取得看到的物體
+    //    if (LookCamera == null)
+    //        return false;
+    //    Vector3 screenPoint = LookCamera.WorldToScreenPoint(transform.position);
+    //    Ray ray = LookCamera.ScreenPointToRay(screenPoint);
+    //    RaycastHit hit;
+    //    if (!Physics.Raycast(ray, out hit, VisionDistance))
+    //        return false;
+    //    #endregion 取得看到的物體
 
-        //檢查看到的物件是否是自己
-        bool result = hit.transform == transform;
-        #endregion 檢查是否有遮蔽物
+    //    //檢查看到的物件是否是自己
+    //    bool result = hit.transform == transform;
+    //    #endregion 檢查是否有遮蔽物
 
 
-        return result;
-    }
-    #endregion 檢查是否在指定攝影機內
+    //    return result;
+    //}
+    //#endregion 檢查是否在指定攝影機內
 
     #region 檢查是否超過視野距離
     bool CanSee()

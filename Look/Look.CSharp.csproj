@@ -57,6 +57,12 @@
     <Reference Include="UnityEngine.Networking">
       <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.Networking">
+      <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>Library\UnityAssemblies\UnityEngine.UI.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
@@ -86,8 +92,11 @@
     <Compile Include="Assets\Cardboard\Scripts\VRDevices\UnityEditorDevice.cs" />
     <Compile Include="Assets\ControlCamera.cs" />
     <Compile Include="Assets\DebugSystem.cs" />
+    <Compile Include="Assets\DrawConeCap.cs" />
+    <Compile Include="Assets\FindPlayer.cs" />
     <Compile Include="Assets\ForceLook.cs" />
     <Compile Include="Assets\InfoBoard.cs" />
+    <Compile Include="Assets\OnCamera.cs" />
     <Compile Include="Assets\PlayerControl.cs" />
     <Compile Include="Assets\Portal.cs" />
   </ItemGroup>

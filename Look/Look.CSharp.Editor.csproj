@@ -125,6 +125,8 @@
     <Compile Include="Assets\Cardboard\Editor\CardboardEditor.cs" />
     <Compile Include="Assets\Cardboard\Editor\StereoControllerEditor.cs" />
     <Compile Include="Assets\Editor\DebugSystemInspector.cs" />
+    <Compile Include="Assets\Editor\DrawConeCapInspector.cs" />
+    <Compile Include="Assets\Editor\FindPlayerInspector.cs" />
     <Compile Include="Assets\Editor\ForceLookInspector.cs" />
   </ItemGroup>
   <ItemGroup>

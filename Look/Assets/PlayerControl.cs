@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 public class PlayerControl : MonoBehaviour {
     public string SystemName = "PlayerControl";
+    public static PlayerControl Instance = null;
 
     public GameObject Plan;
     public Vector3 TargetPos;
@@ -12,6 +13,10 @@ public class PlayerControl : MonoBehaviour {
     public Camera LookCamera;
     public float MoveSpeed = 0.1f;
 
+    void Awake()
+    {
+        Instance = this;
+    }
 
 	// Use this for initialization
 	void Start () {
@@ -26,36 +31,12 @@ public class PlayerControl : MonoBehaviour {
                 Agent.SetDestination(TargetPos);
             else if (Input.GetKeyDown(KeyCode.KeypadPlus) || Input.GetKeyDown(KeyCode.Joystick1Button5)) {
                 //前進到下個目的地
-                if (Targets.Count > 0)
-                {
-                    if (ToTargetsIndex >= Targets.Count)
-                        ToTargetsIndex = 0;
-
-                    DebugSystem.AddLog(DebugSystem.DebugInfo.GetNewDebugInfo(
-                    DebugSystem.DebugInfo.DebugLogTypeEnum.Info,
-                    SystemName,
-                    gameObject.name + "前往(編號"+ ToTargetsIndex + ") "+ Targets[ToTargetsIndex]));
-
-                    Agent.SetDestination(Targets[ToTargetsIndex]);
-                    ToTargetsIndex++;
-                }
+                GoNextPoint();
             }
             else if (Input.GetKeyDown(KeyCode.KeypadMinus) || Input.GetKeyDown(KeyCode.Joystick1Button4))
             {
                 //回到上個目的地
-                if (Targets.Count > 0)
-                {
-                    if (ToTargetsIndex >= Targets.Count)
-                        ToTargetsIndex = 0;
-
-                    DebugSystem.AddLog(DebugSystem.DebugInfo.GetNewDebugInfo(
-                    DebugSystem.DebugInfo.DebugLogTypeEnum.Info,
-                    SystemName,
-                    gameObject.name + "回到(編號" + ToTargetsIndex + ") " + Targets[ToTargetsIndex]));
-
-                    Agent.SetDestination(Targets[ToTargetsIndex]);
-                    ToTargetsIndex++;
-                }
+                GoPreviousPoint();
             }
             else if (Input.GetKeyDown(KeyCode.Mouse0))
             {
@@ -82,7 +63,7 @@ public class PlayerControl : MonoBehaviour {
             }
         }
 
-        Move();
+        GamePadMove();
 
         //Debug.Log("玩家自動搜尋路徑狀態" + Agent.pathStatus);   
 	}
@@ -103,7 +84,7 @@ public class PlayerControl : MonoBehaviour {
     }
     #endregion 取得點到的座標
 
-    void Move()
+    void GamePadMove()
     {
         float horizontal = Input.GetAxisRaw("RightStickHorizontal");
         float Vertical = Input.GetAxis("RightStickVertical");
@@ -117,6 +98,44 @@ public class PlayerControl : MonoBehaviour {
         newPos = newPos + (transform.right * horizontal * MoveSpeed);
         transform.Translate(newPos, Space.World);
     }
+
+    #region 前往下個地點
+    public void GoNextPoint()
+    {
+        if (Targets.Count > 0)
+        {
+            if (ToTargetsIndex >= Targets.Count)
+                ToTargetsIndex = 0;
+
+            DebugSystem.AddLog(DebugSystem.DebugInfo.GetNewDebugInfo(
+            DebugSystem.DebugInfo.DebugLogTypeEnum.Info,
+            SystemName,
+            gameObject.name + "前往(編號" + ToTargetsIndex + ") " + Targets[ToTargetsIndex]));
+
+            Agent.SetDestination(Targets[ToTargetsIndex]);
+            ToTargetsIndex++;
+        }
+    }
+    #endregion
+
+    #region 回到上個地點
+    public void GoPreviousPoint()
+    {
+        if (Targets.Count > 0)
+        {
+            if (ToTargetsIndex >= Targets.Count)
+                ToTargetsIndex = 0;
+
+            DebugSystem.AddLog(DebugSystem.DebugInfo.GetNewDebugInfo(
+            DebugSystem.DebugInfo.DebugLogTypeEnum.Info,
+            SystemName,
+            gameObject.name + "回到(編號" + ToTargetsIndex + ") " + Targets[ToTargetsIndex]));
+
+            Agent.SetDestination(Targets[ToTargetsIndex]);
+            ToTargetsIndex++;
+        }
+    }
+    #endregion 
 
     //顯示輸入資訊
     void LogKeyInputInfo()
