@@ -80,6 +80,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Audios\AudioManager.cs" />
+    <Compile Include="Assets\Audios\AudioPlayer.cs" />
     <Compile Include="Assets\Cardboard\Legacy\Scripts\CardboardOnGUI.cs" />
     <Compile Include="Assets\Cardboard\Legacy\Scripts\CardboardOnGUIMouse.cs" />
     <Compile Include="Assets\Cardboard\Legacy\Scripts\CardboardOnGUIWindow.cs" />

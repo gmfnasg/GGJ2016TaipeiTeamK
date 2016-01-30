@@ -15,6 +15,16 @@ public class Opening : MonoBehaviour
         }
     }
 
+    private AudioManager mAudioManager;
+    private AudioManager audioManager
+    {
+        get
+        {
+            if (!mAudioManager) mAudioManager = GameObject.Find("Audio Manager").GetComponent<AudioManager>();
+            return mAudioManager;
+        }
+    }
+
     public string sceneName;
 
     public void DoStart()
@@ -25,6 +35,7 @@ public class Opening : MonoBehaviour
     IEnumerator StartLoadingScene()
     {
         transition.Play("Fade Out");
+        audioManager.audioState = "Fade Out";
 
         yield return new WaitForSeconds(1.0f);
 
@@ -38,5 +49,17 @@ public class Opening : MonoBehaviour
 #else
         Application.Quit();
 #endif
+    }
+
+    public void DoExit_WaitForAudios(string audioName)
+    {
+        StartCoroutine(WaitForAudios(audioName));
+    }
+
+    IEnumerator WaitForAudios(string audioName)
+    {
+        float audioLength = GameObject.Find("Audio Player").GetComponent<AudioPlayer>().AudioLength(audioName);
+        yield return new WaitForSeconds(audioLength);
+        DoExit();
     }
 }
