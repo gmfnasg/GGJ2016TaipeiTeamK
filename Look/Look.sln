@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Look.CSharp.Plugins", "Look.CSharp.Plugins.csproj", "{ABA65A90-3450-E6B1-816B-9A4DA32E2627}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Look.CSharp", "Look.CSharp.csproj", "{ED85B986-27B6-36E4-DCE0-F15812658FCF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Look.CSharp.Editor", "Look.CSharp.Editor.csproj", "{F54590A9-10D2-13F2-B30E-3B415E7F435B}"
@@ -11,6 +13,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ABA65A90-3450-E6B1-816B-9A4DA32E2627}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABA65A90-3450-E6B1-816B-9A4DA32E2627}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABA65A90-3450-E6B1-816B-9A4DA32E2627}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABA65A90-3450-E6B1-816B-9A4DA32E2627}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ED85B986-27B6-36E4-DCE0-F15812658FCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ED85B986-27B6-36E4-DCE0-F15812658FCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED85B986-27B6-36E4-DCE0-F15812658FCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
