@@ -91,7 +91,7 @@ public class Utility
     }
 }
 
-class WorldCondition
+public class WorldCondition
 {
     public WallInfo[] wall = new WallInfo[4];
     WorldCondition()

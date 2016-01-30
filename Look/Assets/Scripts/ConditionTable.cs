@@ -13,14 +13,13 @@ public class CondExpression
     public virtual void generateVaild(System.Random rand, WorldCondition worldCond) { }
     public virtual String getContent(){ return ""; }
 
-    static public String toString(　CondExprElement ele )
+    static public String toString( CondExprElement ele )
     {
         switch( ele.type )
         {
         case CondExprElemntType.Dir: return toString( (CondDir)ele.meta );
         case CondExprElemntType.WallName: return toString( (WallName)ele.meta );
         }
-
         return "Error Cond Element";
     }
     static public String toString( WallName name )
@@ -159,7 +158,7 @@ class WallDirCondExpression : CondExpression
 public class Condition
 {
 
-    static const int TotalExprNum = 1;
+    private const int TotalExprNum = 1;
     CondExpression[] exprList = new CondExpression[ TotalExprNum ];
 
     public String getContent(int idxExpr)
