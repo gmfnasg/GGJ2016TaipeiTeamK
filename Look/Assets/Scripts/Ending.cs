@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class Ending : MonoBehaviour 
 {
@@ -7,17 +6,14 @@ public class Ending : MonoBehaviour
     public float speed = 10.0f;
 
     RectTransform m_loadingRectTransform;
-
-    // Use this for initialization
+    
     void Awake () 
     {
         m_loadingRectTransform = this.GetComponent<RectTransform>();
     }
-
-    // Update is called once per frame
+    
     void FixedUpdate () 
     {
-
         //text's new position
         float x = 0;
         float y = 0;

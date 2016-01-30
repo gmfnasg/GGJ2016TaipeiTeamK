@@ -1,28 +1,42 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEditor;
 using System.Collections;
 
 public class Opening : MonoBehaviour
 {
+    private Animator mTransition;
+    private Animator transition
+    {
+        get
+        {
+            if (!mTransition) mTransition = GameObject.Find("Transition").GetComponent<Animator>();
+            return mTransition;
+        }
+    }
 
-    // Use this for initialization
-    void Start()
-    {
-	
-    }
-	
-    // Update is called once per frame
-    void Update()
-    {
-	
-    }
+    public string sceneName;
 
     public void DoStart()
     {
-        Application.LoadLevel("GameScene");
+        StartCoroutine(StartLoadingScene());
+    }
+
+    IEnumerator StartLoadingScene()
+    {
+        transition.Play("Fade Out");
+
+        yield return new WaitForSeconds(1.0f);
+
+        SceneManager.LoadScene(sceneName);
     }
 
     public void DoExit()
     {
+#if UNITY_EDITOR
+        EditorApplication.isPlaying = false;
+#else
         Application.Quit();
+#endif
     }
 }
