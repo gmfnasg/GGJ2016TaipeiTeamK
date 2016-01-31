@@ -15,16 +15,13 @@ public class Ending : MonoBehaviour
     void FixedUpdate () 
     {
         //text's new position
-        float x = 0;
         float y = 0;
 
         y += speed * Time.deltaTime;
     
-        if(m_loadingRectTransform.anchoredPosition3D.y < y_end)
+        if(m_loadingRectTransform.anchoredPosition.y < y_end)
         {
-            m_loadingRectTransform.Translate(new Vector3(x, y, 0));
+            m_loadingRectTransform.anchoredPosition += new Vector2(0, y);
         }
-
-        print(y);
     }
 }

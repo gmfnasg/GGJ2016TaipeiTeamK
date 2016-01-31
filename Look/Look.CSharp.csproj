@@ -117,7 +117,9 @@
     <Compile Include="Assets\Scripts\Ending.cs" />
     <Compile Include="Assets\Scripts\Opening.cs" />
     <Compile Include="Assets\Scripts\RoomGenerator.cs" />
+    <Compile Include="Assets\Scripts\UICreator.cs" />
     <Compile Include="Assets\Scripts\WorldCondition.cs" />
+    <Compile Include="Assets\Scripts\playMain.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Cardboard\Distortion\CardboardDistortion.cginc" />

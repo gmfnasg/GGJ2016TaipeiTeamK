@@ -1,48 +1,61 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 using System;
 
 public class AudioPlayer : MonoBehaviour
 {
-	[Serializable]
 	public class AudioObject
 	{
-		public string name;
 		public GameObject obj;
-		internal AudioSource audioSource;
-	}
-	public AudioObject[] audioObject = new AudioObject[]{};
+        public AudioSource audioSource;
+    }
 
-	void Awake()
-	{
-		for(int i = 0; i < audioObject.Length; i++)
-		{
-			audioObject[i].audioSource = audioObject[i].obj.GetComponent<AudioSource>();
-		}
-	}
+    private List<AudioObject> audioObj = new List<AudioObject>();
+
+    void Awake()
+    {
+        // 起始時, 先抓取 AudioObjects
+        audioObj = getAudioObjects();
+    }
+
+    List<AudioObject> getAudioObjects()
+    {
+        List<AudioObject> tempAudioObjs = new List<AudioObject>();
+        
+        // 抓取 Audio Player 子物件, 來取得要播放的 Audio Source
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Transform child = transform.GetChild(i);
+            AudioSource audio = child.GetComponent<AudioSource>();
+            if (!audio) continue;  // 如果無 Audio Source 則不抓取此項, 跳至下一項
+            
+            tempAudioObjs.Add(
+                new AudioObject
+                {
+                    obj = child.gameObject,
+                    audioSource = audio
+                });
+        }
+        
+        return tempAudioObjs;
+    }
 		
 	// 播放音效
 	public void PlayAudio(string audioName)
 	{
-		for(int i = 0; i < audioObject.Length; i++)
-		{
-			if(audioObject[i].name == audioName && audioObject[i].audioSource.isActiveAndEnabled)
-			{
-				audioObject[i].audioSource.Play();
-			}
-		}
+        AudioObject audioObject = audioObj.Find(audio => audio.obj.name == audioName);
+        if (audioObject.audioSource.isActiveAndEnabled) audioObject.audioSource.Play();
 	}
 
     // 抓取音效長度
     public float AudioLength(string audioName)
 	{
-		for(int i = 0; i < audioObject.Length; i++)
-		{
-			if(audioObject[i].name == audioName)
-			{
-				AudioSource audioObjSource = audioObject[i].audioSource;
-				return audioObjSource.clip.length / audioObjSource.pitch;
-			}
-		}
-		return 0.0f;
+        AudioObject audioObject = audioObj.Find(audio => audio.obj.name == audioName);
+        if (audioObject.audioSource.isActiveAndEnabled)
+        {
+            AudioSource audioObjSource = audioObject.audioSource;
+            return audioObjSource.clip.length / audioObjSource.pitch;
+        }
+        else return 0.0f;
 	}
 }
