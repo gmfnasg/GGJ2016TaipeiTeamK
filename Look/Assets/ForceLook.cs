@@ -5,7 +5,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Collider))]
 public class ForceLook : MonoBehaviour
 {
-
+    Vector3 magic_position = new Vector3(0, 0, 0);
     public GameObject UI;
 
     UICreator creator; 
@@ -96,7 +96,24 @@ public class ForceLook : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        creator = UI.GetComponent<UICreator>();
+            
+        try
+        {
+            GameObject uiGO = GameObject.Find("UI");
+
+            if(uiGO!=null)
+            {
+                UICreator uic = uiGO.GetComponent<UICreator>();
+                if(uic!=null)
+                {
+                    creator = uic;
+                }
+            }
+        }
+        catch(System.Exception e)
+        {
+        }
+
 
         if (StereoController3D == null)
         {
@@ -138,14 +155,15 @@ public class ForceLook : MonoBehaviour
 
         //SetGazedAt(false);
 
-        Color notForceColor = CanControl ? CanControlColor : DontControlColor;
-        GetComponent<Renderer>().material.color = notForceColor;
+ //       Color notForceColor = CanControl ? CanControlColor : DontControlColor;
+ //       GetComponent<Renderer>().material.color = notForceColor;
 
         DebugSystem.AddLogSystem(SystemName);
     }
 
     void Update()
     {
+
         #region 切換狀態
         ////先轉換前一次的瞬間狀態唯持續狀態
         if (LookState == LookStateEnum.ExitForceLook)
@@ -172,7 +190,11 @@ public class ForceLook : MonoBehaviour
         #region 正被注視的狀態
         if (LookState == LookStateEnum.OnForceLook)
         {
-
+            if(Input.GetKey(KeyCode.Joystick1Button0) && ForceLookCheckDone &&  HaveGameobjectOnForceLook == gameObject)
+            {
+                creator.OnCancel();
+                this.transform.position = magic_position;
+            }
             switch (InteractiveMode)
             {
                 case InteractiveModeEnum.ControlMe:
@@ -242,6 +264,7 @@ public class ForceLook : MonoBehaviour
         RaycastHit hit;
         if (!Physics.Raycast(ray, out hit, VisionDistance))
         {
+
             if (OnForceLook)
             {
                 this.OnForceLook = false;
@@ -355,10 +378,13 @@ public class ForceLook : MonoBehaviour
     {
         if (OnForceLook)
         {
+            Debug.Log("YYY");
             if (Time.time > CheckDoneTime && !ForceLookCheckDone)
             {
-                ForceLookCheckDone = true;
+
+                ForceLookCheckDone = true; 
                 OnCheckDone();
+
             } else
             {
                 if (!ForceLookCheckDone)
@@ -483,7 +509,7 @@ public class ForceLook : MonoBehaviour
     //開始注視
     void OnChangeToStartForceLook()
     {
-        ChangeColor();
+//        ChangeColor();
         DebugSystem.AddLog(DebugSystem.DebugInfo.GetNewDebugInfo(
             DebugSystem.DebugInfo.DebugLogTypeEnum.Info,
             SystemName,
@@ -493,7 +519,7 @@ public class ForceLook : MonoBehaviour
     //離開注視
     void OnChangeToExitForceLook()
     {
-        ChangeColor();
+//        ChangeColor();
         DebugSystem.AddLog(DebugSystem.DebugInfo.GetNewDebugInfo(
             DebugSystem.DebugInfo.DebugLogTypeEnum.Info,
             SystemName,

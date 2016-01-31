@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2015
+# Visual Studio 2013
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Look.CSharp.Plugins", "Look.CSharp.Plugins.csproj", "{ABA65A90-3450-E6B1-816B-9A4DA32E2627}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Look.CSharp", "Look.CSharp.csproj", "{ED85B986-27B6-36E4-DCE0-F15812658FCF}"

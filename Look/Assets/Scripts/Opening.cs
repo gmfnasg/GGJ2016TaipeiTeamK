@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEditor;
 using System.Collections;
 
 public class Opening : MonoBehaviour
@@ -79,10 +78,6 @@ public class Opening : MonoBehaviour
 
     public void Exit()
     {
-#if UNITY_EDITOR
-        EditorApplication.isPlaying = false;
-#else
         Application.Quit();
-#endif
     }
 }

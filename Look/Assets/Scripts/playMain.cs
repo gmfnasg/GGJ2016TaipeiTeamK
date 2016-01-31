@@ -11,7 +11,7 @@ public class playMain : MonoBehaviour
 	public bool ChTimeB = false;
 	public float TimeTotal;
 	public float ChTimeTotal;
-	float ChTimeTotalS;
+	public float ChTimeTotalS;
 	public GameObject TimeText;
 	public GameObject ChTimeText;
 	public bool SpeakingBool;
@@ -23,8 +23,34 @@ public class playMain : MonoBehaviour
     public GameObject button;
     public Animator transition;
 
+    WorldCondition worldCondition = new WorldCondition();
+
+    RoomGenerator roomGenerator;
+
+
+    private AudioPlayer mAudioPlayer;
+    private AudioPlayer audioPlayer
+    {
+        get
+        {
+            if (!mAudioPlayer) mAudioPlayer = GameObject.Find("Audio Player").GetComponent<AudioPlayer>();
+            return mAudioPlayer;
+        }
+    }
+
+    void generateWorld(int seed)
+    {
+        System.Random rand = new System.Random(4563);
+        worldCondition.generate(rand);
+        roomGenerator.spawnScene(worldCondition);
+
+
+    }
 	void Start ()
     {
+        roomGenerator = GetComponent<RoomGenerator>();
+        generateWorld(0);
+
 		ChTimeTotalS =ChTimeTotal;
 		SpeakingBool =  Random.Range(0.0f,1.0f)>=0.5f ?  true :  false;
 		if(SpeakingBool)
@@ -79,21 +105,26 @@ public class playMain : MonoBehaviour
 		TimeText.GetComponent<Text>().text = TimeTotal.ToString("0") + "秒";
 		TimeTotal -= Time.deltaTime;
 	}
-	void ChTimeCountdow(){
-		ChTimeText.GetComponent<Text>().text = ChTimeTotal.ToString("0") + "秒";
-		ChTimeTotal -= Time.deltaTime;
-		if(ChTimeTotal <= 0f)
-		{
-			ChTimeTotal  = ChTimeTotalS;
-			SpeakingBool = !SpeakingBool;
-			if(SpeakingBool = true)
-			{
-				SpeakingBoolP.transform.Rotate(new Vector3(0.0f,180.0f,0.0f));
-			}
-			if(SpeakingBool = false)
-			{
-				SpeakingBoolP.transform.Rotate(new Vector3(0.0f,0.0f,0.0f));
-			}
-		}
-	}
+    void ChTimeCountdow()
+    {
+        ChTimeText.GetComponent<Text>().text = ChTimeTotal.ToString("0") + " 秒";
+        ChTimeTotal -= Time.deltaTime;
+
+        if (ChTimeTotal <= 0f)
+        {
+            audioPlayer.PlayAudio("Switch Identity");
+
+            ChTimeTotal = ChTimeTotalS;
+            SpeakingBool = SpeakingBool == true ? false : true;
+
+            if (SpeakingBool)
+            {
+                SpeakingBoolP.transform.localEulerAngles = new Vector3(0.0f, 180.0f, 0.0f);
+            }
+            else
+            {
+                SpeakingBoolP.transform.localEulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
+            }
+        }
+    }
 }

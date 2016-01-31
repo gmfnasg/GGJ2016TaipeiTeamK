@@ -4,10 +4,12 @@ using System.Collections.Generic;
 public enum ObjectId
 {
     Ball = 0 ,
-    Candle , 
+    Candlestick, 
     Book ,
     Doll ,
 
+    Lantern ,
+    MugCube ,
 
     MagicLight , 
     Door ,
@@ -220,19 +222,18 @@ public class WorldCondition
         return result;
     }
 
-    public int getRelDirIndex( int index , CondDir dir , bool bFaceFront )
+    public int getRelDirIndex( int index , CondDir dir , bool bFaceWall )
     {
-
-
-
-        return index;
-
+        int result = index + (int)dir;
+        if ( bFaceWall == false )
+            result += 2;
+        return result % 4;
     }
 
-    public bool isTopFireLighting( WallName nearWallName , CondDir dir , bool bFaceFront )
+    public bool isTopFireLighting( WallName nearWallName , CondDir dir , bool bFaceWall )
     {
         int idx = getWallIndex(nearWallName);
-        return bTopFireLighting[ getRelDirIndex( idx , dir , bFaceFront ) ];
+        return bTopFireLighting[ getRelDirIndex( idx , dir , bFaceWall ) ];
     }
 
     public bool isTopFireLighting(int idx)
@@ -298,14 +299,23 @@ public class WorldCondition
         {
             addObject((ObjectId)i, 1 + rand.Next() % (MaxCondObjectNum - 1), ColorId.White);
         }
+
+        addObject(ObjectId.MugCube, 1, ColorId.White);
+        addObject(ObjectId.Lantern, 1, ColorId.White);
         addObject(ObjectId.Door, 1, (ColorId)(rand.Next() % (int)ColorId.Num));
         addObject(ObjectId.MagicLight, 1, (ColorId)(rand.Next() % (int)ColorId.Num));
-
+        
         indexWallHaveLight = rand.Next() % 4;
         int valuePropReq = rand.Next() % (int)ValueProperty.Num;
 
         valueForNumberWall = Utility.getRandomValueForProperty( rand , (ValueProperty)valuePropReq);
         valuePropertyFlag = Utility.getValuePropertyFlag(valueForNumberWall);
+
+        for (int i = 0; i < 4; ++i)
+        {
+            bTopFireLighting[i] = rand.Next() % 2 == 1;
+        }
+        bTopFireLighting[ rand.Next() % 4 ] = true;
     }
 
     void addObject( ObjectId id , int num , ColorId color )

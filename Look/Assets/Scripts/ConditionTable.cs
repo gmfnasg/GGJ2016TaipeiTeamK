@@ -25,10 +25,37 @@ public class CondExpression
     public CondExprElement[] elements;
     public int IdxContent;
 
-    public virtual bool isVaild( WorldCondition worldCond){ return false; }
+    public virtual bool testVaild( WorldCondition worldCond){ return false; }
     public virtual void generate(System.Random rand){}
     public virtual void generateVaild(System.Random rand, WorldCondition worldCond) { }
     public virtual String getContent(){ return ""; }
+
+    static public String toString( ColorId id )
+    {
+        switch( id )
+        {
+         case ColorId.Red: return "紅";
+         case ColorId.White: return "白";
+         case ColorId.Yellow: return "黃";
+         case ColorId.Green: return "綠";
+        }
+        return "Error Color";
+    }
+
+    static public String toString(ObjectId id)
+    {
+        switch (id)
+        {
+            case ObjectId.Ball: return "球";
+            case ObjectId.Candlestick: return "燭台";
+            case ObjectId.Book: return "書";
+            case ObjectId.Doll: return "兔娃娃";
+            case ObjectId.Lantern: return "燈籠";
+            case ObjectId.MugCube: return "方塊";
+        }
+        return "Error Object";
+    }
+
 
     static public String toString( CondExprElement ele )
     {
@@ -36,11 +63,15 @@ public class CondExpression
         {
         case CondExprElemntType.Dir: return toString( (CondDir)ele.meta );
         case CondExprElemntType.WallName: return toString( (WallName)ele.meta );
+        case CondExprElemntType.Color: return toString((ColorId)ele.meta);
+        case CondExprElemntType.Object: return toString((ObjectId)ele.meta);
+        case CondExprElemntType.IntValue: return ele.meta.ToString();
         case CondExprElemntType.FaceFront:
                 if (ele.meta == 0)
                     return "背對";
                 return "面向";
         }
+
         return "Error Cond Element";
     }
     static public String toString( WallName name )
@@ -54,10 +85,7 @@ public class CondExpression
         }
         return "Error Wall Name";
     }
-    static public String toString( ObjectId id )
-    {
-        return "Error Object";
-    }
+
     static public String toString( CondDir dir )
     {
         switch( dir )
@@ -78,7 +106,7 @@ public class CondExpression
 class WallDirCondExpression : CondExpression
 {
     private static CondDir[] dirMap = { CondDir.Left , CondDir.Right };
-    public override bool isVaild( WorldCondition worldCond)
+    public override bool testVaild( WorldCondition worldCond)
     {
         if (IdxContent == 0)
         {
@@ -187,7 +215,7 @@ public class TopLightCondExpression : CondExpression
 {
 
     static CondDir[] dirMap = { CondDir.Front, CondDir.Back, CondDir.Left, CondDir.Right };
-    public override bool isVaild(WorldCondition worldCond)
+    public override bool testVaild(WorldCondition worldCond)
     {
         if (IdxContent == 0)
         {
@@ -265,14 +293,14 @@ public class TopLightCondExpression : CondExpression
         }
         else
         {
-            return "有" + elements[0].meta.ToString() + "個燈亮";
+            return "有" + toString( elements[0] ) + "個燈亮";
         }
     }
 }
 
 public class WallColorCondExpression : CondExpression
 {
-    public override bool isVaild(WorldCondition worldCond) 
+    public override bool testVaild(WorldCondition worldCond) 
     {
         if (IdxContent == 0)
         {
@@ -283,10 +311,13 @@ public class WallColorCondExpression : CondExpression
             }
             return elements[2].meta == (int)worldCond.wall[idx].color;
         }
+
+        return false;
     }
     public override void generate(System.Random rand)
     {
-        IdxContent = rand.Next() % 2;
+        //IdxContent = rand.Next() % 2;
+        IdxContent = 0;
         if (IdxContent == 0)
         {
             elements = new CondExprElement[3];
@@ -323,7 +354,8 @@ public class WallColorCondExpression : CondExpression
     }
     public override void generateVaild(System.Random rand, WorldCondition worldCond) 
     {
-        IdxContent = rand.Next() % 2;
+        //IdxContent = rand.Next() % 2;
+        IdxContent = 0;
         if (IdxContent == 0)
         {
             elements = new CondExprElement[3];
@@ -334,10 +366,7 @@ public class WallColorCondExpression : CondExpression
             elements[1].meta = rand.Next() % 4;
 
             int idx = worldCond.getWallIndex((WallName)elements[1].meta);
-            if (elements[0].meta == 0)
-            {
-                idx = (idx + 2) % 4;
-            }
+            idx = worldCond.getRelDirIndex(idx, CondDir.Front, elements[0].meta != 0);
             elements[2].type = CondExprElemntType.Color;
             elements[2].meta = (int)worldCond.wall[idx].color;
         }
@@ -350,13 +379,21 @@ public class WallColorCondExpression : CondExpression
             elements[1].type = CondExprElemntType.WallName;
             elements[1].meta = rand.Next() % 4;
 
+
             int idx = worldCond.getWallIndex((WallName)elements[1].meta);
-            if (elements[0].meta == 0)
-            {
-                idx = (idx + 2) % 4;
-            }
+            idx = worldCond.getRelDirIndex(idx, CondDir.Front, elements[0].meta != 0);
 
+            elements[3].type = CondExprElemntType.Dir;
+            if ( (rand.Next() % 2 ) == 0 )
+                elements[3].meta = (int)CondDir.Left;
+            else
+                elements[3].meta = (int)CondDir.Right;
 
+            elements[4].type = CondExprElemntType.IntValue;
+            elements[4].meta = 1 + (rand.Next() % 3);
+
+            elements[2].type = CondExprElemntType.Color;
+            elements[2].meta = (int)worldCond.wall[idx].color;
         }
     }
     public override String getContent() 
@@ -372,7 +409,7 @@ public class WallColorCondExpression : CondExpression
 
 public class ObjectNumCondExpression : CondExpression
 {
-    public override bool isVaild(WorldCondition worldCond)
+    public override bool testVaild(WorldCondition worldCond)
     {
         return elements[1].meta == worldCond.getObjectNum((ObjectId)elements[0].meta);
     }
@@ -404,15 +441,15 @@ public class ObjectColorCondExpression : CondExpression
 {
 
     ObjectId[] objectMap = { ObjectId.Door, ObjectId.MagicLight };
-    public override bool isVaild(WorldCondition worldCond)
+    public override bool testVaild(WorldCondition worldCond)
     {
-        return elements[1].meta == (int)worldCond.getObjectColor((ObjectId)elements[0].meta);
+        return elements[1].meta == (int)worldCond.getObjectColor(objectMap[elements[0].meta]);
     }
     public override void generate(System.Random rand)
     {
         elements = new CondExprElement[2];
-        elements[0].type = CondExprElemntType.Object;
-        elements[0].meta = (int)objectMap[ rand.Next() % objectMap.Length ];
+        elements[0].type = CondExprElemntType.IntValue;
+        elements[0].meta = rand.Next() % objectMap.Length;
 
         elements[1].type = CondExprElemntType.Color;
         elements[1].meta = rand.Next() % (int)ColorId.Num;
@@ -420,22 +457,29 @@ public class ObjectColorCondExpression : CondExpression
     public override void generateVaild(System.Random rand, WorldCondition worldCond)
     {
         elements = new CondExprElement[2];
-        elements[0].type = CondExprElemntType.Object;
-        elements[0].meta = (int)objectMap[rand.Next() % objectMap.Length];
+        elements[0].type = CondExprElemntType.IntValue;
+        elements[0].meta = rand.Next() % objectMap.Length;
 
         elements[1].type = CondExprElemntType.Color;
-        elements[1].meta = (int)worldCond.getObjectColor((ObjectId)elements[0].meta);
+        elements[1].meta = (int)worldCond.getObjectColor(objectMap[elements[0].meta]);
     }
     public override String getContent()
     {
-        return "整個場景有" + toString(elements[1]) + "個" + toString(elements[0]);
+        if (elements[0].meta == 0)
+        {
+            return "魔法陣的蠟燭火焰顏色是" +  toString(elements[1]);
+        }
+        else
+        {
+            return "門的顏色是" + toString(elements[1]);
+        }
     }
 }
 
 
 public class WallNumberValueCondExpression : CondExpression
 {
-    public override bool isVaild(WorldCondition worldCond)
+    public override bool testVaild(WorldCondition worldCond)
     {
         return ( ( 1 << elements[0].meta ) & worldCond.valuePropertyFlag ) != 0;
     }
@@ -473,16 +517,24 @@ public class WallNumberValueCondExpression : CondExpression
 
 public class Condition
 {
-    public const int TotalExprNum = 4;
-    CondExpression[] exprList = new CondExpression[ TotalExprNum ];
+    public const int TotalExprNum = 6;
+    CondExpression[] exprList;
+
+    public ObjectId targetId;
 
     public bool bVaild;
 
+    public int getExprissionNum() { return exprList.Length; }
+
+    public String getTarget() { return CondExpression.toString(targetId); }
     public String getContent(int idxExpr)
     {
         return exprList[idxExpr].getContent();
     }
-
+    public bool testVaild( WorldCondition worldCond , int idxExpr )
+    {
+        return exprList[idxExpr].testVaild(worldCond);
+    }
     public CondExpression CreateExpression( int idx )
     {
         switch( idx )
@@ -497,27 +549,39 @@ public class Condition
         return null;
     }
 
-    public void generateVaild( System.Random rand , WorldCondition worldCond )
+    public void generateVaild(System.Random rand, WorldCondition worldCond, int numExpr)
     {
+        int idx = 0;
+        exprList = new CondExpression[numExpr];
+        bool[] useExprMap = Utility.makeRandBool(rand, TotalExprNum, numExpr); 
         for( int i = 0 ; i < TotalExprNum ; ++i )
         {
+            if (useExprMap[i] == false)
+                continue;
+
             CondExpression expr = CreateExpression(i);
             if (expr!=null)
             {
                 expr.generateVaild(rand, worldCond);
             }
-            exprList[i] = expr;
+            exprList[idx] = expr;
+            ++idx;
         }
         bVaild = true;
     }
 
-    public void generateRandom(System.Random rand , WorldCondition worldCond , int invVaildFactor)
+    public void generateRandom(System.Random rand, WorldCondition worldCond, int numExpr, int numInvaild)
     {
-        int numInvaild = 1 + (TotalExprNum - 1);
+        bool[] invaildMap = Utility.makeRandBool(rand, TotalExprNum, numInvaild);
+        bool[] useExprMap = Utility.makeRandBool(rand, TotalExprNum, numExpr );
 
-        bool[] invaildMap = Utility.makeRandBool(rand, TotalExprNum, numInvaild); 
+        int idx = 0;
+        exprList = new CondExpression[numExpr];
         for (int i = 0; i < TotalExprNum; ++i)
         {
+            if (useExprMap[i] == false)
+                continue;
+
             CondExpression expr = CreateExpression(i);
             if (expr != null)
             {
@@ -527,14 +591,15 @@ public class Condition
                     {
                         expr.generate(rand);
                     }
-                    while (expr.isVaild(worldCond) == true);
+                    while (expr.testVaild(worldCond) == true);
                 }
                 else
                 {
                     expr.generateVaild( rand , worldCond );
                 }
             }
-            exprList[i] = expr;
+            exprList[idx] = expr;
+            ++idx;
         }
 
         bVaild = false;
@@ -544,28 +609,46 @@ public class Condition
 public class ConditionTable
 {
 
-    public void generate( System.Random rand , WorldCondition worldCond , int num , int numVaild )
+    public void generate( System.Random rand , WorldCondition worldCond , int numSel , int numExpr , int numVaild )
     {
-        numSelection = num;
+        numSelection = numSel;
         numConditionVaild = numVaild;
 
         conditions = new Condition[numSelection];
 
-        bool[] vaildMap = Utility.makeRandBool( rand , num , numConditionVaild );
+        int[] objectIdMap = Utility.makeRandSeq( rand , 6 , 0 );
+        bool[] vaildMap = Utility.makeRandBool( rand , numSelection , numConditionVaild );
         for( int i = 0 ; i < numSelection ; ++i )
         {
             conditions[i] = new Condition();
             if ( vaildMap[i] )
             {
-                conditions[i].generateRandom( rand , worldCond , 10 );
+                int numInvaild = 1;
+                int additionInvaild = numExpr - 1;
+                if (additionInvaild > 0)
+                    numInvaild += rand.Next() % additionInvaild;
+                conditions[i].generateRandom(rand, worldCond, numExpr, numInvaild );
             }
             else
             {
-                conditions[i].generateVaild( rand , worldCond );
+                conditions[i].generateVaild( rand , worldCond , numExpr );
             }
+
+            conditions[i].targetId = (ObjectId)objectIdMap[i];
         }
     }
 
+    public bool isVaildObject( ObjectId id )
+    {
+        for( int i = 0 ; i < numSelection ; ++i )
+        {
+            if (conditions[i].targetId == id )
+            {
+                return conditions[i].bVaild;
+            }
+        }
+        return false;
+    }
     public Condition getCondition(int idx) { return conditions[idx]; }
     public bool isVaildCondition(int idx)
     {

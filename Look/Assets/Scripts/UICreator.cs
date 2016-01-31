@@ -39,10 +39,16 @@ public class UICreator : MonoBehaviour
 
     public void CreateUI()
     {
+        /*
+        canvasObject = new GameObject("Canvas");
+        GameObject canvas = CreateCanvas(this.transform);
+        CreateEventSystem(canvas.transform);
+        */
         panel = CreatePanel(this.transform);
         CreateText(panel.transform, 0, 0, 160, 50, "Do you want to get the Item - " + item_name + " - ?", 24);
-        
-        CreateText(panel.transform, 0, -100, 200, 50, "Press X to get it", 24);
+
+        CreateButton(panel.transform, 0, -100, 200, 50, "Press X to get it", delegate{OnUse();});
+//        CreateButton(panel.transform, 100, -100, 160, 50, "No", delegate{OnCancel();});
     }
 
 
