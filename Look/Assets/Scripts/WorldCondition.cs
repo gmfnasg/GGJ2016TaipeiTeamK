@@ -45,9 +45,87 @@ public enum ColorId
     Num,
 }
 
+public enum ValueProperty
+{
+    PrimeNumber = 0,
+    DividedBy4 ,
+    DSumIsBiggerThan10 ,
+    DOIsBiggerThanDT ,
+
+
+    Num ,
+}
+
+
 
 public class Utility
 {
+    public static int getRandomValueForProperty( System.Random rand , ValueProperty prop )
+    {
+        int result= 1;
+        switch (prop)
+        {
+            case ValueProperty.PrimeNumber:
+                do
+                {
+                    result = 1 + rand.Next() % 99;
+                }
+                while (Utility.isPrime(result));
+                break;
+            case ValueProperty.DividedBy4:
+                result = rand.Next() % 95 + 4;
+                result = 4 * (result / 4);
+                break;
+            case ValueProperty.DSumIsBiggerThan10:
+                while (true)
+                {
+                    int DO = 1 + rand.Next() % 9;
+                    int DT = rand.Next() % 10;
+                    result = 10 * DT + DO;
+                    if (DO + DT > 10)
+                        break;
+                }
+                break;
+            case ValueProperty.DOIsBiggerThanDT:
+                while (true)
+                {
+                    int DO = 1 + rand.Next() % 9;
+                    int DT = rand.Next() % 10;
+                    result = 10 * DT + DO;
+                    if (DO > DT)
+                        break;
+                }
+                break;
+
+        }
+
+        return result;
+    }
+    public static int getValuePropertyFlag( int value )
+    {
+        int result = 0;
+        if (isPrime(value))
+            result |= 1 << (int)ValueProperty.PrimeNumber;
+        if( (value % 4) == 0 )
+            result |= 1 << (int)ValueProperty.DividedBy4;
+        int DT = value / 10;
+        int DO = value % 10;
+        if (DO + DT > 10)
+            result |= 1 << (int)ValueProperty.DSumIsBiggerThan10;
+        if (DO > DT)
+            result |= 1 << (int)ValueProperty.DOIsBiggerThanDT;
+
+        return result;
+    }
+    public static bool isPrime( int value )
+    {
+        for( int i = 2 ; i < value ; ++i )
+        {
+            if ((value % i) == 0)
+                return false;
+        }
+        return true;
+    }
     public static int[] makeRandSeq(System.Random rand, int num, int start)
     {
         int[] result = new int[num];
@@ -102,11 +180,14 @@ public struct ObjectInfo
     public int num;
 }
 
+
+
 public class WorldCondition
 {
     public WallInfo[] wall = new WallInfo[4];
     public int indexWallHaveLight;
     public int valueForNumberWall;
+    public int valuePropertyFlag;
 
     public List<ObjectInfo> objects = new List<ObjectInfo>();
 
@@ -139,12 +220,19 @@ public class WorldCondition
         return result;
     }
 
+    public int getRelDirIndex( int index , CondDir dir , bool bFaceFront )
+    {
+
+
+
+        return index;
+
+    }
+
     public bool isTopFireLighting( WallName nearWallName , CondDir dir , bool bFaceFront )
     {
-        int idx = getWallIndex(nearWallName) + (int)dir;
-        if (bFaceFront == false)
-            idx += 2;
-        return bTopFireLighting[idx % 4];
+        int idx = getWallIndex(nearWallName);
+        return bTopFireLighting[ getRelDirIndex( idx , dir , bFaceFront ) ];
     }
 
     public bool isTopFireLighting(int idx)
@@ -164,7 +252,7 @@ public class WorldCondition
 
     public int getRelDirWallIndex( int idx , CondDir dir )
     {
-        return (idx + (int)dir) % 4;
+        return getRelDirIndex(idx, dir, false);
     }
 
     public bool checkVaild( WallName a , WallName b , CondDir dir )
@@ -206,15 +294,18 @@ public class WorldCondition
             wall[i].color = (ColorId)(rand.Next() % (int)ColorId.Num);
         }
 
-        indexWallHaveLight = rand.Next() % 4;
-        valueForNumberWall = 1 + rand.Next() % 99;
-
-        for(int i = 0 ; i < (int)ObjectId.NumCondObject ; ++i )
+        for (int i = 0; i < (int)ObjectId.NumCondObject; ++i)
         {
-            addObject( (ObjectId)i , 1 + rand.Next() % (MaxCondObjectNum - 1) , ColorId.White );
+            addObject((ObjectId)i, 1 + rand.Next() % (MaxCondObjectNum - 1), ColorId.White);
         }
         addObject(ObjectId.Door, 1, (ColorId)(rand.Next() % (int)ColorId.Num));
         addObject(ObjectId.MagicLight, 1, (ColorId)(rand.Next() % (int)ColorId.Num));
+
+        indexWallHaveLight = rand.Next() % 4;
+        int valuePropReq = rand.Next() % (int)ValueProperty.Num;
+
+        valueForNumberWall = Utility.getRandomValueForProperty( rand , (ValueProperty)valuePropReq);
+        valuePropertyFlag = Utility.getValuePropertyFlag(valueForNumberWall);
     }
 
     void addObject( ObjectId id , int num , ColorId color )

@@ -274,45 +274,99 @@ public class WallColorCondExpression : CondExpression
 {
     public override bool isVaild(WorldCondition worldCond) 
     {
-        int idx = worldCond.getWallIndex((WallName)elements[1].meta);
-        if (elements[0].meta == 0)
+        if (IdxContent == 0)
         {
-            idx = (idx + 2) % 4;
+            int idx = worldCond.getWallIndex((WallName)elements[1].meta);
+            if (elements[0].meta == 0)
+            {
+                idx = (idx + 2) % 4;
+            }
+            return elements[2].meta == (int)worldCond.wall[idx].color;
         }
-        return elements[2].meta == (int)worldCond.wall[idx].color;
     }
-    public override void generate(System.Random rand) 
+    public override void generate(System.Random rand)
     {
-        elements = new CondExprElement[3];
-        elements[0].type = CondExprElemntType.FaceFront;
-        elements[0].meta = rand.Next() % 2;
+        IdxContent = rand.Next() % 2;
+        if (IdxContent == 0)
+        {
+            elements = new CondExprElement[3];
+            elements[0].type = CondExprElemntType.FaceFront;
+            elements[0].meta = rand.Next() % 2;
 
-        elements[1].type = CondExprElemntType.WallName;
-        elements[1].meta = rand.Next() % 4;
+            elements[1].type = CondExprElemntType.WallName;
+            elements[1].meta = rand.Next() % 4;
 
-        elements[2].type = CondExprElemntType.Color;
-        elements[2].meta = rand.Next() % (int)ColorId.Num;
+            elements[2].type = CondExprElemntType.Color;
+            elements[2].meta = rand.Next() % (int)ColorId.Num;
+        }
+        else
+        {
+            elements = new CondExprElement[5];
+            elements[0].type = CondExprElemntType.FaceFront;
+            elements[0].meta = rand.Next() % 2;
+
+            elements[1].type = CondExprElemntType.WallName;
+            elements[1].meta = rand.Next() % 4;
+
+            elements[2].type = CondExprElemntType.Color;
+            elements[2].meta = rand.Next() % (int)ColorId.Num;
+
+            elements[3].type = CondExprElemntType.Dir;
+            if ( (rand.Next() % 2 ) == 0 )
+                elements[3].meta = (int)CondDir.Left;
+            else
+                elements[3].meta = (int)CondDir.Right;
+
+            elements[4].type = CondExprElemntType.IntValue;
+            elements[4].meta = 1 + (rand.Next() % 3);
+        }
     }
     public override void generateVaild(System.Random rand, WorldCondition worldCond) 
     {
-        elements = new CondExprElement[3];
-        elements[0].type = CondExprElemntType.FaceFront;
-        elements[0].meta = rand.Next() % 2;
-
-        elements[1].type = CondExprElemntType.WallName;
-        elements[1].meta = rand.Next() % 4;
-
-        int idx = worldCond.getWallIndex((WallName)elements[1].meta);
-        if (elements[0].meta == 0)
+        IdxContent = rand.Next() % 2;
+        if (IdxContent == 0)
         {
-            idx = ( idx + 2 ) % 4;
+            elements = new CondExprElement[3];
+            elements[0].type = CondExprElemntType.FaceFront;
+            elements[0].meta = rand.Next() % 2;
+
+            elements[1].type = CondExprElemntType.WallName;
+            elements[1].meta = rand.Next() % 4;
+
+            int idx = worldCond.getWallIndex((WallName)elements[1].meta);
+            if (elements[0].meta == 0)
+            {
+                idx = (idx + 2) % 4;
+            }
+            elements[2].type = CondExprElemntType.Color;
+            elements[2].meta = (int)worldCond.wall[idx].color;
         }
-        elements[2].type = CondExprElemntType.Color;
-        elements[2].meta = (int)worldCond.wall[idx].color;
+        else
+        {
+            elements = new CondExprElement[3];
+            elements[0].type = CondExprElemntType.FaceFront;
+            elements[0].meta = rand.Next() % 2;
+
+            elements[1].type = CondExprElemntType.WallName;
+            elements[1].meta = rand.Next() % 4;
+
+            int idx = worldCond.getWallIndex((WallName)elements[1].meta);
+            if (elements[0].meta == 0)
+            {
+                idx = (idx + 2) % 4;
+            }
+
+
+        }
     }
     public override String getContent() 
     {
-        return toString(elements[0]) + toString(elements[1]) + "那面牆，顏色是" + toString( elements[2] ); 
+        if (IdxContent == 0)
+        {
+            return toString(elements[0]) + toString(elements[1]) + "那面牆，顏色是" + toString(elements[2]);
+        }
+
+        return toString(elements[0]) + toString(elements[1]) + "向" + toString(elements[3]) + "的第" + toString(elements[4]) + toString(elements[2]);
     }
 }
 
@@ -383,23 +437,37 @@ public class WallNumberValueCondExpression : CondExpression
 {
     public override bool isVaild(WorldCondition worldCond)
     {
-        return elements[0].meta == worldCond.valueForNumberWall;
+        return ( ( 1 << elements[0].meta ) & worldCond.valuePropertyFlag ) != 0;
     }
     public override void generate(System.Random rand)
     {
         elements = new CondExprElement[1];
         elements[0].type = CondExprElemntType.IntValue;
-        elements[0].meta = 1 + rand.Next() % 99;
+        elements[0].meta = rand.Next() % (int)ValueProperty.Num;
     }
     public override void generateVaild(System.Random rand, WorldCondition worldCond)
     {
+        List<int> props = new List<int>();
+        for (int i = 0; i < (int)ValueProperty.Num; ++i )
+        {
+            if ( ( (1 << i) & worldCond.valuePropertyFlag ) != 0 )
+                props.Add(i);
+        }
         elements = new CondExprElement[1];
         elements[0].type = CondExprElemntType.IntValue;
-        elements[0].meta = worldCond.valueForNumberWall;
+        elements[0].meta = props[ rand.Next() % props.Count ];
+
     }
     public override String getContent()
     {
-        return "在牆上的數字為" + elements[0].meta.ToString();
+        switch( (ValueProperty)elements[0].meta )
+        {
+        case ValueProperty.PrimeNumber: return "在牆上的數字是質數";
+        case ValueProperty.DividedBy4: return "在牆上的數字是四的倍數";
+        case ValueProperty.DSumIsBiggerThan10: return "在牆上的數字，十位數字加個位數字超過10";
+        case ValueProperty.DOIsBiggerThanDT: return "在牆上的數字，個位數字比十位數字大";
+        }
+        return "Error Content";
     }
 }
 
