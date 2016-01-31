@@ -25,10 +25,32 @@ public class Opening : MonoBehaviour
         }
     }
 
+    private AudioPlayer mAudioPlayer;
+    private AudioPlayer audioPlayer
+    {
+        get
+        {
+            if (!mAudioPlayer) mAudioPlayer = GameObject.Find("Audio Player").GetComponent<AudioPlayer>();
+            return mAudioPlayer;
+        }
+    }
+
     public string sceneName;
+
+    void Awake()
+    {
+        transition.Play("Fade In");
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.Mouse0)) DoStart();
+        if (Input.GetKeyDown(KeyCode.Joystick1Button1) || Input.GetKeyDown(KeyCode.Mouse1)) DoExit();
+    }
 
     public void DoStart()
     {
+        audioPlayer.PlayAudio("Button Click");
         StartCoroutine(StartLoadingScene());
     }
 
@@ -44,22 +66,23 @@ public class Opening : MonoBehaviour
 
     public void DoExit()
     {
+        audioPlayer.PlayAudio("Button Click");
+        StartCoroutine(WaitForAudios("Button Click"));
+    }
+
+    IEnumerator WaitForAudios(string audioName)
+    {
+        float audioLength = audioPlayer.AudioLength(audioName);
+        yield return new WaitForSeconds(audioLength);
+        Exit();
+    }
+
+    public void Exit()
+    {
 #if UNITY_EDITOR
         EditorApplication.isPlaying = false;
 #else
         Application.Quit();
 #endif
-    }
-
-    public void DoExit_WaitForAudios(string audioName)
-    {
-        StartCoroutine(WaitForAudios(audioName));
-    }
-
-    IEnumerator WaitForAudios(string audioName)
-    {
-        float audioLength = GameObject.Find("Audio Player").GetComponent<AudioPlayer>().AudioLength(audioName);
-        yield return new WaitForSeconds(audioLength);
-        DoExit();
     }
 }

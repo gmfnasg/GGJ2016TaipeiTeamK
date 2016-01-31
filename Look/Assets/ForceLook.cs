@@ -3,22 +3,35 @@ using System.Collections;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Collider))]
-public class ForceLook : MonoBehaviour {
-	string SystemName = "ForceLook";
+public class ForceLook : MonoBehaviour
+{
 
-	public bool CanControl = false; //是否可被操作
-    public bool OnForceLook = false; // 是否正被注視
-    public bool ForceLookCheckDone = false; //注視確認完成
+    public GameObject UI;
 
-	public float WatingTime = 1;
-	public GameObject CardBoard;
+    UICreator creator; 
 
-    public float CheckDoneTime = -1; //記錄注視完成時間
+    string SystemName = "ForceLook";
 
-	public StereoController StereoController3D = null; //用來控制鏡頭推拉用
-	public static float ZoomSpeed = 0.1f; //鏡頭推拉速度
+    public bool CanControl = false;
+    //是否可被操作
+    public bool OnForceLook = false;
+    // 是否正被注視
+    public bool ForceLookCheckDone = false;
+    //注視確認完成
 
-    public float VisionDistance = 100;//可視距離
+    public float WatingTime = 1;
+    public GameObject CardBoard;
+
+    public float CheckDoneTime = -1;
+    //記錄注視完成時間
+
+    public StereoController StereoController3D = null;
+    //用來控制鏡頭推拉用
+    public static float ZoomSpeed = 0.1f;
+    //鏡頭推拉速度
+
+    public float VisionDistance = 100;
+//可視距離
 
     //自動轉換攝影機位置
     public static bool AutoChangeControler = false;
@@ -27,10 +40,10 @@ public class ForceLook : MonoBehaviour {
     public static Color CanControlColor = Color.yellow;
     public static Color CanControOnForcelColor = Color.red;
     public static Color DontControlColor = Color.green;
-    public static Color DontControOnForcelColor = Color.blue; 
+    public static Color DontControOnForcelColor = Color.blue;
 
     //是否有任何物件被注視
-    public static GameObject HaveGameobjectOnForceLook =null;
+    public static GameObject HaveGameobjectOnForceLook = null;
 
     public static Camera LookCamera = null;
 
@@ -43,46 +56,68 @@ public class ForceLook : MonoBehaviour {
     //觀看狀態
     public enum LookStateEnum
     {
-        Invisible,      //不可視
+        Invisible,
+        //不可視
 
-        OnForceLook,    //正被注視
-        StartForceLook, //開始注視
-        ExitForceLook,  //離開注視
+        OnForceLook,
+        //正被注視
+        StartForceLook,
+        //開始注視
+        ExitForceLook,
+        //離開注視
         
-        OnLook,         //可被看見
-        StartLook,      //進入視野
-        ExitLook,       //離開視野
+        OnLook,
+        //可被看見
+        StartLook,
+        //進入視野
+        ExitLook,
+        //離開視野
     }
 
     //注視確認後的互動模式
     public enum InteractiveModeEnum
     {
-        None, //沒有互動      
-        ControlMe, //自己被控制
-        ControlOther, //別人被控制
-        ProtagonistGoNextPoint, //主角前進到下一個位置
-        ProtagonistStopMove, //主角停止移動
-        GameOver, //遊戲結束
-        ResetGame, //重新遊玩
+        None,
+        //沒有互動
+        ControlMe,
+        //自己被控制
+        ControlOther,
+        //別人被控制
+        ProtagonistGoNextPoint,
+        //主角前進到下一個位置
+        ProtagonistStopMove,
+        //主角停止移動
+        GameOver,
+        //遊戲結束
+        ResetGame,
+        //重新遊玩
     }
 
     // Use this for initialization
-    void Start () {
-		if (StereoController3D == null) {
-			GameObject cardboard3dGo = GameObject.Find ("CardboardMain 3D");
-			if (cardboard3dGo != null) {
-				Transform mcTransform = cardboard3dGo.transform.FindChild ("Head/Main Camera");
-				if (mcTransform != null) {
-					StereoController sc = mcTransform.GetComponent<StereoController> ();
-					if (sc != null) {
-						StereoController3D = sc;
-					}
-				}
-			}
-		}
-		if (StereoController3D == null) {
-			Debug.LogError ("找不到StereoController3D");
-		}
+    void Start()
+    {
+        creator = UI.GetComponent<UICreator>();
+
+        if (StereoController3D == null)
+        {
+            GameObject cardboard3dGo = GameObject.Find("CardboardMain 3D");
+            if (cardboard3dGo != null)
+            {
+                Transform mcTransform = cardboard3dGo.transform.FindChild("Head/Main Camera");
+                if (mcTransform != null)
+                {
+                    StereoController sc = mcTransform.GetComponent<StereoController>();
+                    if (sc != null)
+                    {
+                        StereoController3D = sc;
+                    }
+                }
+            }
+        }
+        if (StereoController3D == null)
+        {
+            Debug.LogError("找不到StereoController3D");
+        }
 
         if (LookCamera == null)
         {
@@ -106,8 +141,8 @@ public class ForceLook : MonoBehaviour {
         Color notForceColor = CanControl ? CanControlColor : DontControlColor;
         GetComponent<Renderer>().material.color = notForceColor;
 
-        DebugSystem.AddLogSystem (SystemName);
-	}
+        DebugSystem.AddLogSystem(SystemName);
+    }
 
     void Update()
     {
@@ -117,13 +152,11 @@ public class ForceLook : MonoBehaviour {
         {
             LookState = LookStateEnum.OnLook;
             OnChangeToOnLook();
-        }
-        else if (LookState == LookStateEnum.ExitLook)
+        } else if (LookState == LookStateEnum.ExitLook)
         {
             LookState = LookStateEnum.Invisible;
             OnChangeToInvisible();
-        }
-        else if (LookState == LookStateEnum.StartLook)
+        } else if (LookState == LookStateEnum.StartLook)
         {
             LookState = LookStateEnum.OnLook;
             OnChangeToOnLook();
@@ -145,7 +178,7 @@ public class ForceLook : MonoBehaviour {
                 case InteractiveModeEnum.ControlMe:
                     //移動Cardboard到自己的位置
                     if (CanControl && Portal.Instance != null
-                    && (AutoChangeControler || (Input.GetKey(KeyCode.Joystick1Button7) && Input.GetKeyDown(KeyCode.Joystick1Button0))))
+                        && (AutoChangeControler || (Input.GetKey(KeyCode.Joystick1Button7) && Input.GetKeyDown(KeyCode.Joystick1Button0))))
                     {
                         Portal.Instance.DoPortal(CardBoard, this.gameObject.transform.position);
                         if (StereoController3D != null)
@@ -205,7 +238,7 @@ public class ForceLook : MonoBehaviour {
         if (LookCamera == null)
             return;
 
-        Ray ray = LookCamera.ScreenPointToRay(new Vector3(Screen.width/2, Screen.height/2, 0));
+        Ray ray = LookCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
         RaycastHit hit;
         if (!Physics.Raycast(ray, out hit, VisionDistance))
         {
@@ -245,8 +278,7 @@ public class ForceLook : MonoBehaviour {
 
             this.LookState = LookStateEnum.StartForceLook;
             OnChangeToStartForceLook();
-        }
-        else if(!lookMe && OnForceLook)
+        } else if (!lookMe && OnForceLook)
         {
             this.LookState = LookStateEnum.ExitForceLook;
             this.OnForceLook = false;
@@ -255,16 +287,15 @@ public class ForceLook : MonoBehaviour {
             OnChangeToExitForceLook();
 
             HaveGameobjectOnForceLook = null;
-        }
-        else
+        } else
         {
-            if(this.OnForceLook)
+            if (this.OnForceLook)
                 this.OnForceLook = false;
-            if(this.ForceLookCheckDone)
+            if (this.ForceLookCheckDone)
                 this.ForceLookCheckDone = false;
-            if(this.LookState == LookStateEnum.OnForceLook)
+            if (this.LookState == LookStateEnum.OnForceLook)
                 this.LookState = LookStateEnum.ExitForceLook;
-            if(HaveGameobjectOnForceLook==gameObject)
+            if (HaveGameobjectOnForceLook == gameObject)
                 HaveGameobjectOnForceLook = null;
         }
 
@@ -292,8 +323,7 @@ public class ForceLook : MonoBehaviour {
                 this.LookState = LookStateEnum.StartLook;
                 OnChangeToStartLook();
             }
-        }
-        else
+        } else
         {
             if (this.LookState == LookStateEnum.OnLook)
             {
@@ -321,15 +351,15 @@ public class ForceLook : MonoBehaviour {
     }
 
     //更新注視狀態行為
-    public void UpdatOnForceLookBehavior(){
+    public void UpdatOnForceLookBehavior()
+    {
         if (OnForceLook)
         {
             if (Time.time > CheckDoneTime && !ForceLookCheckDone)
             {
                 ForceLookCheckDone = true;
                 OnCheckDone();
-            }
-            else
+            } else
             {
                 if (!ForceLookCheckDone)
                 {
@@ -342,8 +372,7 @@ public class ForceLook : MonoBehaviour {
                     #endregion ZOOM IN
                 }
             }
-        }
-        else
+        } else
         {
             #region ZOOM OUT
             if (StereoController3D != null
@@ -358,6 +387,7 @@ public class ForceLook : MonoBehaviour {
     }
 
     #region 改變被注視狀態表現
+
     void ChangeColor()
     {
         Renderer renderer = GetComponent<Renderer>();
@@ -371,12 +401,12 @@ public class ForceLook : MonoBehaviour {
         if (OnForceLook)
         {
             material.color = CanControl ? CanControOnForcelColor : DontControOnForcelColor;
-        }
-        else
+        } else
         {
             material.color = CanControl ? CanControlColor : DontControlColor;
         }
     }
+
     #endregion 改變被注視狀態表現
 
     //#region 檢查是否在指定攝影機內
@@ -417,6 +447,7 @@ public class ForceLook : MonoBehaviour {
     //#endregion 檢查是否在指定攝影機內
 
     #region 檢查是否超過視野距離
+
     bool CanSee()
     {
         #region 取得看到的物體
@@ -434,9 +465,11 @@ public class ForceLook : MonoBehaviour {
 
         return result;
     }
+
     #endregion
 
     #region 狀態類
+
     //未被看見
     void OnChangeToInvisible()
     {
@@ -462,9 +495,11 @@ public class ForceLook : MonoBehaviour {
     {
         ChangeColor();
         DebugSystem.AddLog(DebugSystem.DebugInfo.GetNewDebugInfo(
-                DebugSystem.DebugInfo.DebugLogTypeEnum.Info,
-                SystemName,
-                "離開注視" + this.gameObject.name));
+            DebugSystem.DebugInfo.DebugLogTypeEnum.Info,
+            SystemName,
+            "離開注視" + this.gameObject.name));
+
+        creator.OnCancel();
     }
 
     //可被看見
@@ -476,27 +511,35 @@ public class ForceLook : MonoBehaviour {
     void OnChangeToStartLook()
     {
         DebugSystem.AddLog(DebugSystem.DebugInfo.GetNewDebugInfo(
-               DebugSystem.DebugInfo.DebugLogTypeEnum.Info,
-               SystemName,
-               this.gameObject.name + "被發現"));
+            DebugSystem.DebugInfo.DebugLogTypeEnum.Info,
+            SystemName,
+            this.gameObject.name + "被發現"));
     }
 
     //離開視野
     void OnChangeToExitLook()
     {
         DebugSystem.AddLog(DebugSystem.DebugInfo.GetNewDebugInfo(
-               DebugSystem.DebugInfo.DebugLogTypeEnum.Info,
-               SystemName,
-               this.gameObject.name + "消失了"));
+            DebugSystem.DebugInfo.DebugLogTypeEnum.Info,
+            SystemName,
+            this.gameObject.name + "消失了"));
     }
 
     //確認完成
     void OnCheckDone()
     {
         DebugSystem.AddLog(DebugSystem.DebugInfo.GetNewDebugInfo(
-                    DebugSystem.DebugInfo.DebugLogTypeEnum.Info,
-                    SystemName,
-                    "注視" + this.gameObject.name + "確認完成 "));
+            DebugSystem.DebugInfo.DebugLogTypeEnum.Info,
+            SystemName,
+            "注視" + this.gameObject.name + "確認完成 "));
+
+
+        if(creator.UIExist == false)
+        {
+            creator.item_name = this.name;
+            creator.UIExist = true;
+        }
+
+        #endregion 狀態類
     }
-    #endregion 狀態類
 }
